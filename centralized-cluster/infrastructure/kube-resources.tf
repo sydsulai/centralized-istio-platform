@@ -39,3 +39,17 @@ resource "kubernetes_namespace_v1" "istio_system_ns" {
     aws_eks_cluster.platform_cluster
   ]
 }
+
+resource "kubernetes_namespace_v1" "aws-pca-issuer" {
+  metadata {
+    name = "aws-pca-issuer"
+    labels = {
+      "component" = "istio-cert-manager"
+      "usage" = "aws-pca-issuer"
+    }
+  }
+
+  depends_on = [
+    aws_eks_cluster.platform_cluster
+  ]
+}

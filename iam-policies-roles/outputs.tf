@@ -28,6 +28,11 @@ output "access_secret_policy_arn" {
   value       = aws_iam_policy.access_secret_policy.arn
 }
 
+output "awspca_issuer_policy_arn" {
+  description = "ARN of the custom AWS PCA Issuer IAM policy"
+  value       = aws_iam_policy.awspca_issuer_policy.arn
+}
+
 output "aws_load_balancer_controller_policy_arn" {
   description = "ARN of the custom AWS Load Balancer Controller IAM policy"
   value       = aws_iam_policy.aws_load_balancer_controller_policy.arn
@@ -48,5 +53,7 @@ output "policy_arns" {
   description = "All IAM policy ARNs created in this module"
   value = {
     access_secret_policy = aws_iam_policy.access_secret_policy.arn
+    awspca_issuer_policy  = aws_iam_policy.awspca_issuer_policy.arn
+    aws_load_balancer_controller_policy = aws_iam_policy.aws_load_balancer_controller_policy.arn
   }
 }

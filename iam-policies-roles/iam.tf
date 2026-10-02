@@ -210,3 +210,8 @@ resource "aws_iam_role_policy_attachment" "eks_nodegroup_alb_ingress_access" {
   role       = aws_iam_role.eks_nodegroup.name
 }
 # Note: iam_policy.json = https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json
+
+resource "aws_iam_policy" "awspca_issuer_policy" {
+  name   = "AWSPCAIssuerPolicy"
+  policy = file("AWSPCAIssuerPolicy.json") # Update the resource in the json file.
+}

@@ -54,3 +54,38 @@ resource "aws_iam_role_policy_attachment" "xray_daemon_irsa_policy_attachment" {
   role       = aws_iam_role.xray_daemon_platform_irsa.name
 }
 # Note: iam_policy.json = https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json
+
+data "aws_iam_policy_document" "pca_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.eks_oidc.arn]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks_oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:aws-pca-issuer:aws-pca-issuer"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks_oidc.url, "https://", "")}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "pca_issuer" {
+  name               = "ServiceAccountRolePrivateCA-platform-cluster"
+  assume_role_policy = data.aws_iam_policy_document.pca_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "pca_issuer" {
+  role       = aws_iam_role.pca_issuer.name
+  policy_arn = "arn:aws:iam::829007908826:policy/AWSPCAIssuerPolicy"
+}
